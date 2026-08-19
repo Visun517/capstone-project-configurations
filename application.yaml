@@ -2,6 +2,8 @@ eureka:
   instance:
     prefer-ip-address: true
   client:
+    registerWithEureka: true
+    fetchRegistry: true
     service-url:
       defaultZone: http://vm-node-a.platform:9001/eureka,http://vm-node-b.platform:9001/eureka,http://vm-node-c.platform:9001/eureka
 
