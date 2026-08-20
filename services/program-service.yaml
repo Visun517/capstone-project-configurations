@@ -14,6 +14,6 @@ spring:
 server:
   port: 0
 
-#eureka:
-#  instance:
-#    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+eureka:
+  instance:
+    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
