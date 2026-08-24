@@ -5,23 +5,17 @@ spring:
         - id: student-service
           uri: lb://student-service
           predicates:
-            - Path=/api/v1/students/**
-          filters:
-            - StripPrefix=1
+            - Path=/api/v1/students, /api/v1/students/**
 
         - id: program-service
           uri: lb://program-service
           predicates:
-            - Path=/api/v1/programs/**
-          filters:
-            - StripPrefix=1
+            - Path=/api/v1/programs, /api/v1/programs/**
 
         - id: enrollment-service
           uri: lb://enrollment-service
           predicates:
-            - Path=/api/v1/enrollments/**
-          filters:
-            - StripPrefix=1
+            - Path=/api/v1/enrollments, /api/v1/enrollments/**
 
       default-filters:
         - PreserveHostHeader
