@@ -5,7 +5,9 @@ spring:
         - id: student-service
           uri: lb://student-service
           predicates:
-            - Path=/api/v1/students/**
+            - Path=/api/v1/students/**filters:
+          filters:
+            - StripPrefix=1
 
         - id: program-service
           uri: lb://program-service
