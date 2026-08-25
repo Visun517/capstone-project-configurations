@@ -15,17 +15,17 @@ spring:
         - id: student-service
           uri: lb://student-service
           predicates:
-            - Path=/api/v1/students/**
+            - Path=/api/v1/students, /api/v1/students/**
 
         - id: program-service
           uri: lb://program-service
           predicates:
-            - Path=/api/v1/programs/**
+            - Path=/api/v1/programs, /api/v1/programs/**
 
         - id: enrollment-service
           uri: lb://enrollment-service
           predicates:
-            - Path=/api/v1/enrollments/**
+            - Path=/api/v1/enrollments, /api/v1/enrollments/**
 
       default-filters:
         - PreserveHostHeader
