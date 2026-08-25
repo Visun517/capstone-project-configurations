@@ -25,6 +25,8 @@ spring:
 server:
   port: 0
   forward-headers-strategy: framework
+  tomcat:
+    max-swallow-size: -1
 
 eureka:
   instance:
