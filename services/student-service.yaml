@@ -1,7 +1,7 @@
 spring:
   application:
     name: student-service
-  servlet:                # 🟢 මේක දැන් තියෙන්නේ spring යටතේ
+  servlet:
     multipart:
       enabled: true
       max-file-size: 10MB
