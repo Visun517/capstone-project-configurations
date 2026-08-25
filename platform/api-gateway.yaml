@@ -15,20 +15,17 @@ spring:
         - id: student-service
           uri: lb://STUDENT-SERVICE
           predicates:
-            - Path=/api/v1/students
-            - Path=/api/v1/students/**
+            - Path=/api/v1/students/**, /api/v1/students
 
         - id: program-service
           uri: lb://PROGRAM-SERVICE
           predicates:
-            - Path=/api/v1/programs
-            - Path=/api/v1/programs/**
+            - Path=/api/v1/programs/**, /api/v1/programs
 
         - id: enrollment-service
           uri: lb://ENROLLMENT-SERVICE
           predicates:
-            - Path=/api/v1/enrollments
-            - Path=/api/v1/enrollments/**
+            - Path=/api/v1/enrollments/**, /api/v1/enrollments
 
       default-filters:
         - PreserveHostHeader
@@ -41,6 +38,9 @@ spring:
             allowedHeaders: "*"
 
 management:
+  endpoint:
+    gateway:
+      enabled: true
   endpoints:
     web:
       exposure:
