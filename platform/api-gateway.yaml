@@ -15,22 +15,35 @@ spring:
         - id: student-service
           uri: lb://STUDENT-SERVICE
           predicates:
-            - Path=/api/v1/students/**, /api/v1/students
+            - name: Path
+              args:
+                patterns:
+                  - "/api/v1/students/**"
+                  - "/api/v1/students"
 
         - id: program-service
           uri: lb://PROGRAM-SERVICE
           predicates:
-            - Path=/api/v1/programs/**, /api/v1/programs
+            - name: Path
+              args:
+                patterns:
+                  - "/api/v1/programs/**"
+                  - "/api/v1/programs"
 
         - id: enrollment-service
           uri: lb://ENROLLMENT-SERVICE
           predicates:
-            - Path=/api/v1/enrollments/**, /api/v1/enrollments
+            - name: Path
+              args:
+                patterns:
+                  - "/api/v1/enrollments/**"
+                  - "/api/v1/enrollments"
 
       default-filters:
         - PreserveHostHeader
 
       globalcors:
+        add-to-simple-url-handler-mapping: true
         corsConfigurations:
           '[/**]':
             allowedOrigins: "*"
