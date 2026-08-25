@@ -35,3 +35,4 @@ eureka:
 app:
   storage:
     path: ${user.home}/.ijse/eca/students
+    bucket-name: "student-bucket-1"
