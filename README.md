@@ -1,55 +1,106 @@
 # ⚙️ Capstone Project Configurations
 
-Welcome to the configuration repository for the **ECA Campus Management System**. This repository serves as the central configuration source for the Spring Cloud Config Server, storing externalized configurations for all platform components and business microservices.
+> **Centralized Configuration Repository** consumed by the Spring Cloud Config Server for the entire Capstone microservices ecosystem.
 
-## 🎓 1. Student Information
+---
 
-| Attribute | Details |
-| :--- | :--- |
-| **Name** | Visun Prabodha |
+## 📋 Student & Submission Details
+
+| Field | Details |
+|---|---|
+| **Student Name** | Visun Prabodha |
 | **Student Number** | 241711009 |
 | **Slack Handle** | Visun Prabodha |
 | **GCP Project ID** | `visun-gcp-lab` |
+| **Submission Type** | Alternative Option (Capstone Project) |
 
-## 📖 2. Project Description
+---
 
-The **ECA Campus Management System** relies on a distributed microservices architecture. To manage configurations across multiple environments and services efficiently, this repository acts as the single source of truth. It utilizes **Spring Cloud Config Server** to serve configuration files dynamically to microservices at startup. 
+## 📖 Project Description
 
-By externalizing these configurations, we decouple configuration management from the application code, enabling seamless updates across different environments.
+This repository serves as the **single source of truth for configuration** across the entire Capstone microservices platform. It is polled directly by the `config-server` (from the [Backend Microservices Platform](#) repo), which exposes these `.yaml` files to every downstream microservice at startup and refresh time — decoupling configuration from application code entirely, in line with the **Twelve-Factor App** methodology.
 
-## 🛠️ 3. Technology / Format Stack
+Each microservice fetches its own configuration file (matched by `spring.application.name`) plus the shared `application.yaml`, enabling centralized, environment-agnostic, and version-controlled configuration management across the distributed system.
 
-*   **Format:** YAML (`.yaml`)
-*   **Architecture Pattern:** Externalized Configuration
-*   **Framework/Tools:** Spring Cloud Config, Spring Boot
+### 📑 Key Configuration Files
 
-## 📂 4. Configuration Structure
+| File | Consumed By | Purpose |
+|---|---|---|
+| `application.yaml` | All Services | Global shared configuration, including Eureka client zones and default settings inherited by every microservice. |
+| `api-gateway.yaml` | `api-gateway` | Route predicates and filters, global CORS policy, and `spring.codec.max-in-memory-size` adjustments for large request handling. |
+| `student-service.yaml` | `student-service` | PostgreSQL connection details, Tomcat `max-swallow-size: -1` (to support large multipart uploads), and the target **GCS bucket name**. |
+| `program-service.yaml` | `program-service` | PostgreSQL connection string and JPA/Hibernate settings. |
+| `enrollment-service.yaml` | `enrollment-service` | MongoDB connection URI and database settings. |
 
-Below is the repository structure representation for the configuration files:
+---
 
-```text
-📦 capstone-project-configurations
- ┣ 📜 application.yaml
- ┣ 📜 api-gateway.yaml
- ┣ 📜 student-service.yaml
- ┣ 📜 program-service.yaml
- ┗ 📜 enrollment-service.yaml
+## 🏛️ How This Repository Fits the Architecture
+
+```
+┌───────────────────────────────┐
+│  Capstone Project               │
+│  Configurations (this repo)     │
+│                                  │
+│  application.yaml                │
+│  api-gateway.yaml                │
+│  student-service.yaml            │
+│  program-service.yaml            │
+│  enrollment-service.yaml         │
+└────────────────┬─────────────────┘
+                  │  Git-backed polling
+                  ▼
+┌───────────────────────────────┐
+│  config-server (Port 9000)       │
+│  Spring Cloud Config Server      │
+└────────────────┬─────────────────┘
+                  │  HTTP fetch on startup / refresh
+      ┌───────────┼────────────┬─────────────┬─────────────┐
+      ▼           ▼             ▼             ▼             ▼
+ api-gateway  student-svc  program-svc  enrollment-svc  service-registry
 ```
 
-### 📄 Configuration File Breakdown
+---
 
-| File Name | Purpose / Key Configurations Included |
-| :--- | :--- |
-| 🌐 `application.yaml` | **Global Configurations:** Contains shared properties across all services, such as the Eureka `defaultZone` for service discovery and base logging levels. |
-| 🚪 `api-gateway.yaml` | **API Gateway Routing & Security:** Defines routing logic (Predicates & Filters), global CORS configurations for cross-origin requests, and maximum file upload size limits. |
-| 🧑‍🎓 `student-service.yaml` | **Student Microservice:** Includes PostgreSQL database connection properties, Tomcat swallow size limits, and the Google Cloud Storage bucket name (`app.storage.bucket-name`). |
-| 📚 `program-service.yaml` | **Program Microservice:** Stores PostgreSQL database connection details specific to academic program data management. |
-| 📝 `enrollment-service.yaml`| **Enrollment Microservice:** Contains MongoDB connection details for handling document-based enrollment records. |
+## 📁 Repository Structure
 
-## 🚀 5. Usage Instructions
+```
+capstone-project-configurations/
+├── application.yaml            # Global shared config (Eureka zones, defaults)
+├── api-gateway.yaml             # Gateway routes, CORS, in-memory buffer size
+├── student-service.yaml         # PostgreSQL, GCS bucket name, Tomcat settings
+├── program-service.yaml         # PostgreSQL connection
+├── enrollment-service.yaml      # MongoDB connection
+└── README.md
+```
 
-### Connecting the Config Server
-To utilize this repository, ensure your **Spring Cloud Config Server** is configured to point to this Git repository URL in its configuration file:
+---
+
+## 🛠️ Technology Stack
+
+| Category | Technology |
+|---|---|
+| **Configuration Format** | YAML |
+| **Configuration Server** | Spring Cloud Config Server |
+| **Backing Store** | Git (this repository) |
+| **Service Discovery Integration** | Netflix Eureka |
+| **Cloud Provider** | Google Cloud Platform (GCP) |
+| **Consumed By** | Spring Boot 3.3.2 / Spring Cloud 2023.0.3 microservices |
+
+---
+
+## 🚀 Local Setup / Getting Started
+
+This repository does not run as a standalone application — it is a **passive Git-backed data source** read by the `config-server`. To use it locally:
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/<your-username>/capstone-project-configurations.git
+```
+
+### 2️⃣ Point Your Local `config-server` to This Repository
+
+In the `config-server`'s `application.yaml` (or `bootstrap.yaml`), set the Git URI to your local clone path or the remote GitHub URL:
 
 ```yaml
 spring:
@@ -57,19 +108,45 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/[your-username]/capstone-project-configurations.git
+          uri: https://github.com/<your-username>/capstone-project-configurations.git
           default-label: main
+          clone-on-start: true
 ```
 
-### Consuming Configurations in Microservices
-Each microservice in the ECA Campus Management System must include the `spring-cloud-starter-config` dependency.
+### 3️⃣ Start the Config Server
 
-Configure each microservice to fetch its respective `.yaml` file by specifying the Config Server URI and its application name:
-
-```yaml
-spring:
-  config:
-    import: "optional:configserver:http://localhost:8888"
-  application:
-    name: student-service # This maps directly to student-service.yaml
+```bash
+cd config-server
+mvn spring-boot:run
 ```
+
+### 4️⃣ Verify Configuration Is Served Correctly
+
+```bash
+# Global config
+curl http://localhost:9000/application/default
+
+# Service-specific config
+curl http://localhost:9000/student-service/default
+curl http://localhost:9000/program-service/default
+curl http://localhost:9000/enrollment-service/default
+curl http://localhost:9000/api-gateway/default
+```
+
+Each endpoint should return the merged YAML properties for that service, combining `application.yaml` with the service-specific file.
+
+### ✏️ Making Configuration Changes
+
+1. Edit the relevant `.yaml` file in this repository.
+2. Commit and push to the `main` branch.
+3. Trigger a config refresh on the target microservice via its `/actuator/refresh` endpoint (requires Spring Boot Actuator + `@RefreshScope` beans), or restart the instance to pick up changes.
+
+```bash
+curl -X POST http://localhost:<service-port>/actuator/refresh
+```
+
+---
+
+## 📄 License
+
+This project was developed as part of the **Enterprise Cloud Architecture** university module (Capstone Project — Alternative Option).
